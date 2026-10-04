@@ -447,42 +447,74 @@ export default function KonvaCanvasStage({
             );
           })}
 
-          {/* Click-through Navigation Flow Arrows */}
-          {showFlows &&
-            screens.map((screen) => {
-              const srcPos = screenPositions.get(screen.screenId);
-              if (!srcPos) return null;
-
-              return screen.elements.map((el) => {
-                if (!el.navigatesTo || !screenPositions.has(el.navigatesTo)) return null;
-                const destPos = screenPositions.get(el.navigatesTo)!;
-
-                const startX = srcPos.x + el.x + el.width;
-                const startY = srcPos.y + el.y + el.height / 2;
+          {/* Click-through Navigation Flow Arrows (Clean & Selective) */}
+          {showFlows && (() => {
+            // 1. If an element is actively selected, only draw flow for that element
+            if (selectedElementId) {
+              const activeScreen = screens.find((s) => s.screenId === activeScreenId);
+              const selectedEl = activeScreen?.elements.find((e) => e.id === selectedElementId);
+              if (selectedEl && selectedEl.navigatesTo && screenPositions.has(selectedEl.navigatesTo)) {
+                const srcPos = screenPositions.get(activeScreen!.screenId)!;
+                const destPos = screenPositions.get(selectedEl.navigatesTo)!;
+                const startX = srcPos.x + selectedEl.x + selectedEl.width;
+                const startY = srcPos.y + selectedEl.y + selectedEl.height / 2;
                 const endX = destPos.x;
                 const endY = destPos.y + 60;
-
-                const midX1 = startX + 40;
-                const midY1 = startY;
-                const midX2 = endX - 40;
-                const midY2 = endY;
-
                 return (
-                  <Group key={`flow_${el.id}_${el.navigatesTo}`}>
+                  <Group key={`flow_selected_${selectedEl.id}`}>
                     <Arrow
-                      points={[startX, startY, midX1, midY1, midX2, midY2, endX, endY]}
-                      stroke="#3B82F6"
-                      strokeWidth={2}
-                      fill="#3B82F6"
-                      pointerLength={8}
-                      pointerWidth={8}
-                      tension={0.4}
+                      points={[startX, startY, startX + 35, startY, endX - 35, endY, endX, endY]}
+                      stroke="#38BDF8"
+                      strokeWidth={2.5}
+                      fill="#38BDF8"
+                      pointerLength={9}
+                      pointerWidth={9}
+                      tension={0.3}
                       dash={[6, 3]}
                     />
                   </Group>
                 );
-              });
-            })}
+              }
+              return null;
+            }
+
+            // 2. If no element is selected, only draw at most 1 clean high-level arrow per target screen
+            const drawnPairs = new Set<string>();
+            return screens.flatMap((screen) => {
+              const srcPos = screenPositions.get(screen.screenId);
+              if (!srcPos) return [];
+
+              return screen.elements
+                .filter((el) => el.navigatesTo && screenPositions.has(el.navigatesTo))
+                .slice(0, 1)
+                .map((el) => {
+                  const pairKey = `${screen.screenId}->${el.navigatesTo}`;
+                  if (drawnPairs.has(pairKey)) return null;
+                  drawnPairs.add(pairKey);
+
+                  const destPos = screenPositions.get(el.navigatesTo!)!;
+                  const startX = srcPos.x + srcPos.width;
+                  const startY = srcPos.y + 36;
+                  const endX = destPos.x;
+                  const endY = destPos.y + 36;
+
+                  return (
+                    <Group key={`flow_scr_${pairKey}`}>
+                      <Arrow
+                        points={[startX, startY, startX + 25, startY, endX - 25, endY, endX, endY]}
+                        stroke="#60A5FA"
+                        strokeWidth={1.5}
+                        fill="#60A5FA"
+                        opacity={0.35}
+                        pointerLength={6}
+                        pointerWidth={6}
+                        dash={[5, 4]}
+                      />
+                    </Group>
+                  );
+                });
+            });
+          })()}
         </Layer>
       </Stage>
     </div>

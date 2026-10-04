@@ -16,7 +16,8 @@ import {
   Compass,
   Share2,
   PieChart,
-  LayoutGrid
+  LayoutGrid,
+  Trash2
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -35,6 +36,7 @@ interface HeaderProps {
   canRedo: boolean;
   onUndo: () => void;
   onRedo: () => void;
+  onClearScreens?: () => void;
   onOpenExport: () => void;
   onOpenSettings: () => void;
   pipelineStage: 'idle' | 'scanning' | 'analyzing' | 'generating' | 'ready';
@@ -57,6 +59,7 @@ export default function Header({
   canRedo,
   onUndo,
   onRedo,
+  onClearScreens,
   onOpenExport,
   onOpenSettings,
   pipelineStage,
@@ -202,6 +205,19 @@ export default function Header({
         >
           <Redo2 className="w-3.5 h-3.5" />
         </button>
+
+        {currentMode === 'wireframe' && onClearScreens && (
+          <>
+            <div className="h-3.5 w-[1px] bg-zinc-800 mx-1" />
+            <button
+              onClick={onClearScreens}
+              className="p-1.5 text-zinc-400 hover:text-red-400 rounded hover:bg-zinc-800 transition-colors"
+              title="Clear all screens from canvas"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </>
+        )}
       </div>
 
       {/* Right Actions: Analyze, Generate All, Export, Settings */}

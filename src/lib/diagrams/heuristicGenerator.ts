@@ -81,10 +81,10 @@ export class HeuristicDiagramGenerator {
       {
         id: 'node_nurture',
         type: 'transform',
-        label: 'Log to Nurture Sheet',
-        service: 'sheets',
-        description: 'Appends cold leads to 30-day re-engagement drip',
-        config: { sheetName: 'Unqualified Leads' },
+        label: 'Store in Lead Database',
+        service: 'database',
+        description: 'Records leads to persistent database for re-engagement drip',
+        config: { table: 'unqualified_leads' },
         position: { x: 0, y: 0 }
       },
       {
@@ -434,7 +434,7 @@ export class HeuristicDiagramGenerator {
         icons: [
           { service: 'calendar', label: 'Google Calendar' },
           { service: 'slack', label: 'Slack Alerts' },
-          { service: 'sheets', label: 'Pipeline Analytics' }
+          { service: 'database', label: 'Pipeline Analytics' }
         ],
         outcomes: [
           { icon: 'CalendarCheck', title: 'Zero Friction Booking', text: 'Direct calendar invite with Zoom / Meet links' },

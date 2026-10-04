@@ -250,23 +250,20 @@ export default function WorkspaceTree({
             <Bot className="w-3.5 h-3.5 text-blue-400" />
             Product / Architecture Brief
           </span>
-          <button
-            onClick={() =>
-              onBriefTextChange?.(
-                'AI agent finds leads on social media, emails them, calls interested ones, books meetings, follows up'
-              )
-            }
-            className="text-[10px] text-blue-400 hover:text-blue-300"
-            title="Load lead-gen agent sample brief"
-          >
-            + Sample Lead-Gen
-          </button>
+          {briefText && (
+            <button
+              onClick={() => onBriefTextChange?.('')}
+              className="text-[10px] text-zinc-400 hover:text-zinc-200"
+            >
+              Clear
+            </button>
+          )}
         </div>
         <textarea
           rows={2}
           value={briefText}
           onChange={(e) => onBriefTextChange?.(e.target.value)}
-          placeholder="e.g. Next.js app architecture, API pipelines, or agent workflow description..."
+          placeholder="e.g. Next.js app architecture, API routes, or system description..."
           className="w-full p-2 bg-zinc-900 border border-zinc-800 rounded text-[11px] text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-blue-500"
         />
 
@@ -488,13 +485,16 @@ export default function WorkspaceTree({
 
               <button
                 type="button"
-                onClick={loadSampleTaskManager}
-                disabled={isScanning}
-                className="py-1.5 px-2.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-xs font-medium rounded-lg flex items-center gap-1 transition-colors border border-blue-500/30"
-                title="Load sample TaskFlow Agile workspace"
+                onClick={() => {
+                  onFilesChanged([], 'New Project');
+                  setStatusMessage({ text: 'Workspace cleared', type: 'info' });
+                }}
+                disabled={isScanning || files.length === 0}
+                className="py-1.5 px-2.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 text-zinc-300 text-xs font-medium rounded-lg flex items-center gap-1 transition-colors border border-zinc-700/50"
+                title="Clear all workspace files"
               >
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                <span>Sample PRD</span>
+                <Trash2 className="w-3.5 h-3.5 text-zinc-400" />
+                <span>Clear Files</span>
               </button>
             </div>
           </div>

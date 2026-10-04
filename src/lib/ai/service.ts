@@ -150,15 +150,15 @@ export class HeuristicWireframeGenerator {
       elements.push({
         id: 'sidebar_nav',
         type: 'sidebar',
-        label: 'Navigation Menu\n• Dashboard\n• Tasks\n• Projects\n• Settings',
+        label: `Navigation\n• ${params.name}\n• Overview\n• Management\n• Settings`,
         x: 16,
         y: currentY,
-        width: 200,
+        width: 190,
         height: dims.height - currentY - 24,
         children: []
       });
-      contentLeft = 232;
-      contentWidth = dims.width - contentLeft - 16;
+      contentLeft = 224;
+      contentWidth = dims.width - contentLeft - 24;
     }
 
     // 3. Title / Breadcrumb
@@ -179,10 +179,10 @@ export class HeuristicWireframeGenerator {
       elements.push({
         id: 'search_bar',
         type: 'input',
-        label: 'Search or filter items...',
+        label: 'Search or filter records...',
         x: contentLeft,
         y: currentY,
-        width: isMobile ? contentWidth - 96 : 280,
+        width: isMobile ? contentWidth - 100 : Math.min(260, contentWidth - 120),
         height: 36
       });
 
@@ -190,63 +190,50 @@ export class HeuristicWireframeGenerator {
         id: 'btn_primary_action',
         type: 'button',
         label: '+ New Action',
-        x: isMobile ? contentLeft + contentWidth - 88 : contentLeft + 296,
+        x: isMobile ? contentLeft + contentWidth - 90 : contentLeft + 272,
         y: currentY,
-        width: 88,
-        height: 36,
-        navigatesTo: params.navigatesToTarget || null
+        width: 90,
+        height: 36
       });
       currentY += 48;
     }
 
-    // 5. Main Content: Table, Cards, or Form
-    if (components.includes('table')) {
-      elements.push({
-        id: 'table_main',
-        type: 'table',
-        label: 'Items Table\nColumns: ID | Title | Status | Assignee | Due Date',
-        x: contentLeft,
-        y: currentY,
-        width: contentWidth,
-        height: isMobile ? 300 : 280,
-        navigatesTo: params.navigatesToTarget || null
-      });
-      currentY += isMobile ? 312 : 292;
-    } else if (components.includes('chart')) {
+    // 5. Main Content: Clean cards and layout
+    if (components.includes('chart')) {
       elements.push({
         id: 'chart_analytics',
         type: 'chart',
-        label: 'Activity & Progress Chart',
+        label: `${params.name} Metrics & Activity`,
         x: contentLeft,
         y: currentY,
         width: isMobile ? contentWidth : (contentWidth - 16) / 2,
-        height: 200
+        height: 210
       });
 
       if (!isMobile) {
         elements.push({
           id: 'card_stats',
           type: 'card',
-          label: 'Summary Statistics\n• Total Tasks: 48\n• In Progress: 14\n• Completed: 34',
+          label: `Overview Summary\n• Active Items: 24\n• Status: Operational\n• Last Sync: Just now`,
           x: contentLeft + (contentWidth - 16) / 2 + 16,
           y: currentY,
           width: (contentWidth - 16) / 2,
-          height: 200
+          height: 210
         });
       }
-      currentY += 216;
+      currentY += 224;
     } else {
-      // Default Card Container
+      // Clean modern content card container
       elements.push({
         id: 'card_content',
         type: 'card',
-        label: `${params.name} Content Container\n${params.purpose || 'Main container section'}`,
+        label: `${params.name} View\n${params.purpose || 'Main application interface container'}`,
         x: contentLeft,
         y: currentY,
         width: contentWidth,
-        height: 240
+        height: Math.min(dims.height - currentY - (isMobile ? 70 : 30), 280)
       });
-      currentY += 256;
+      currentY += 290;
     }
 
     // 6. Mobile bottom navigation bar

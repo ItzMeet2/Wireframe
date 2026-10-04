@@ -23,6 +23,7 @@ interface ScreenListProps {
   onAddScreen: () => void;
   onDeleteScreen: (screenId: string) => void;
   onRetryScreen: (screen: WireframeScreen) => void;
+  onClearAll?: () => void;
 }
 
 export default function ScreenList({
@@ -31,7 +32,8 @@ export default function ScreenList({
   onSelectScreen,
   onAddScreen,
   onDeleteScreen,
-  onRetryScreen
+  onRetryScreen,
+  onClearAll
 }: ScreenListProps) {
   const getDeviceIcon = (device: string) => {
     switch (device) {
@@ -87,14 +89,26 @@ export default function ScreenList({
             {screens.length}
           </span>
         </div>
-        <button
-          onClick={onAddScreen}
-          className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded text-xs flex items-center gap-1"
-          title="Add New Screen"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Add</span>
-        </button>
+        <div className="flex items-center gap-1">
+          {screens.length > 0 && onClearAll && (
+            <button
+              onClick={onClearAll}
+              className="px-1.5 py-1 hover:bg-red-950/40 text-zinc-400 hover:text-red-400 rounded text-[11px] flex items-center gap-1 transition-colors border border-transparent hover:border-red-800/40"
+              title="Clear all generated screens"
+            >
+              <Trash2 className="w-3 h-3" />
+              <span>Clear</span>
+            </button>
+          )}
+          <button
+            onClick={onAddScreen}
+            className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded text-xs flex items-center gap-1"
+            title="Add New Screen"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add</span>
+          </button>
+        </div>
       </div>
 
       {/* Screen List items */}

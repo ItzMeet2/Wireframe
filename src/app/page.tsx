@@ -38,16 +38,16 @@ const INITIAL_PROJECT_ID = 'wiregen-default-project';
 export default function WireGenApp() {
   const [project, setProject] = useState<WireGenProject>({
     id: INITIAL_PROJECT_ID,
-    name: 'Task Manager Agile Suite',
+    name: 'Codebase Architecture',
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    files: TASK_MANAGER_WORKSPACE,
+    files: [],
     stackInfo: {
       primaryStack: 'Next.js',
       secondaryStacks: ['React'],
       platform: 'web',
-      confidence: 0.92,
-      evidence: ['package.json']
+      confidence: 0.9,
+      evidence: []
     },
     analysisSummary: null,
     screens: [],
@@ -55,18 +55,18 @@ export default function WireGenApp() {
     history: { past: [], future: [] }
   });
 
-  const [currentMode, setCurrentMode] = useState<DiagramMode>('wireframe');
+  const [currentMode, setCurrentMode] = useState<DiagramMode>('workflow');
   const [briefText, setBriefText] = useState<string>('');
   const [modeSuggestion, setModeSuggestion] = useState<ModeSuggestion>({
-    suggestedModes: ['wireframe'],
+    suggestedModes: ['workflow'],
     confidence: 0.85,
     reason: '',
     keywordsFound: []
   });
 
-  const [activeTab, setActiveTab] = useState<'files' | 'screens'>('screens');
+  const [activeTab, setActiveTab] = useState<'files' | 'screens'>('files');
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-  const [showFlows, setShowFlows] = useState<boolean>(true);
+  const [showFlows, setShowFlows] = useState<boolean>(false);
 
   // Modals
   const [showFilesPreview, setShowFilesPreview] = useState(false);
@@ -287,6 +287,22 @@ export default function WireGenApp() {
     if (autoGenerate) {
       handleGenerateWorkflowForFiles(newFiles, updatedName);
     }
+  };
+
+  // Clear all screens and reset active selection
+  const handleClearScreens = () => {
+    setProject((prev) => {
+      const updated = {
+        ...prev,
+        screens: [],
+        activeScreenId: null,
+        analysisSummary: null,
+        history: { past: [], future: [] }
+      };
+      saveProject(updated).catch(() => {});
+      return updated;
+    });
+    setSelectedElementId(null);
   };
 
   // 1. Analyze Pipeline: Ingest -> Stack Detect -> Pluggable Screen Hints -> AI Analysis Call
@@ -705,6 +721,7 @@ export default function WireGenApp() {
         canRedo={(project.history?.future?.length || 0) > 0}
         onUndo={handleUndo}
         onRedo={handleRedo}
+        onClearScreens={handleClearScreens}
         onOpenExport={() => setShowExportModal(true)}
         onOpenSettings={() => setShowSettingsModal(true)}
         pipelineStage={pipelineStage}
@@ -759,6 +776,7 @@ export default function WireGenApp() {
                 onAddScreen={handleAddScreen}
                 onDeleteScreen={handleDeleteScreen}
                 onRetryScreen={(scr) => handleRegenerateSingleScreen(scr.screenId, '')}
+                onClearAll={handleClearScreens}
               />
             ) : (
               <WorkspaceTree
